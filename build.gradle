@@ -3,6 +3,7 @@ plugins {
 	id 'org.jetbrains.kotlin.plugin.spring' version '1.9.25'
 	id 'org.springframework.boot' version '3.5.4'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.jooq.jooq-codegen-gradle' version '3.19.24'
 }
 
 group = 'com.example'
@@ -36,6 +37,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	
+	// jOOQ code generation dependencies
+	jooqCodegen 'org.postgresql:postgresql'
 }
 
 kotlin {
@@ -46,4 +50,26 @@ kotlin {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// jOOQ code generation configuration
+jooq {
+	configuration {
+		jdbc {
+			driver = 'org.postgresql.Driver'
+			url = 'jdbc:postgresql://localhost:5432/mydatabase'
+			user = 'myuser'
+			password = 'secret'
+		}
+		generator {
+			database {
+				name = 'org.jooq.meta.postgres.PostgresDatabase'
+				inputSchema = 'public'
+			}
+			target {
+				packageName = 'com.example.library.jooq'
+				directory = 'src/main/java'
+			}
+		}
+	}
 }
