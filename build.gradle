@@ -4,6 +4,7 @@ plugins {
 	id 'org.springframework.boot' version '3.5.4'
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'org.jooq.jooq-codegen-gradle' version '3.19.24'
+	id 'org.flywaydb.flyway' version '11.2.0'
 }
 
 group = 'com.example'
@@ -27,6 +28,8 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-jooq'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.flywaydb:flyway-database-postgresql'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
@@ -37,6 +40,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testRuntimeOnly 'com.h2database:h2'
 	
 	// jOOQ code generation dependencies
 	jooqCodegen 'org.postgresql:postgresql'
@@ -52,14 +56,22 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+// Flyway configuration
+flyway {
+	url = 'jdbc:postgresql://localhost:5432/librarydb'
+	user = 'myuser'
+	password = 'library'
+	locations = ['classpath:db/migration']
+}
+
 // jOOQ code generation configuration
 jooq {
 	configuration {
 		jdbc {
 			driver = 'org.postgresql.Driver'
-			url = 'jdbc:postgresql://localhost:5432/mydatabase'
+			url = 'jdbc:postgresql://localhost:5432/librarydb'
 			user = 'myuser'
-			password = 'secret'
+			password = 'library'
 		}
 		generator {
 			database {
