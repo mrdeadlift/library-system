@@ -74,13 +74,19 @@ jooq {
 			password = 'library'
 		}
 		generator {
+			name = 'org.jooq.codegen.KotlinGenerator'
 			database {
 				name = 'org.jooq.meta.postgres.PostgresDatabase'
 				inputSchema = 'public'
 			}
+			generate {
+				kotlinSetterJvmNameAnnotationsOnIsPrefix = true
+				kotlinNotNullPojoAttributes = true
+				kotlinNotNullRecordAttributes = true
+			}
 			target {
 				packageName = 'com.example.library.jooq'
-				directory = 'src/main/java'
+				directory = 'src/main/kotlin'
 			}
 		}
 	}
