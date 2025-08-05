@@ -38,3 +38,9 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+# Crush
+.crush
+
+# Claude
+.claude
