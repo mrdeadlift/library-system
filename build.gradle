@@ -60,6 +60,17 @@ kotlin {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	
+	// テスト環境の統一化: タイムゾーンと文字エンコーディングの設定
+	jvmArgs = [
+		'-Duser.timezone=Asia/Tokyo',
+		'-Dfile.encoding=UTF-8',
+		'-Djava.awt.headless=true'
+	]
+	
+	// テストのトランザクション管理とデータベース初期化の安定性向上
+	systemProperty 'spring.test.database.replace', 'any'
+	systemProperty 'spring.sql.init.mode', 'always'
 }
 
 // Flyway configuration
