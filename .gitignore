@@ -47,3 +47,15 @@ out/
 
 # Serena
 .serena
+
+### jOOQ Generated Files ###
+src/main/java/com/example/library/jooq/
+
+### Database ###
+*.db
+*.sqlite
+*.sqlite3
+
+### Logs ###
+*.log
+logs/

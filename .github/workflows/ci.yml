@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: librarydb
+          POSTGRES_USER: myuser
+          POSTGRES_PASSWORD: library
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Cache Gradle packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+
+    - name: Wait for PostgreSQL
+      run: |
+        until pg_isready -h localhost -p 5432 -U myuser; do
+          echo "Waiting for PostgreSQL..."
+          sleep 2
+        done
+
+    - name: Run database migrations
+      run: ./gradlew flywayMigrate
+      env:
+        CI: true
+
+    - name: Generate jOOQ classes
+      run: ./gradlew jooqCodegen
+      env:
+        CI: true
+
+    - name: Run lint checks
+      run: ./gradlew ktlintCheck
+      env:
+        CI: true
+
+    - name: Run tests
+      run: ./gradlew test
+      env:
+        CI: true
+        SPRING_PROFILES_ACTIVE: ci
+
+    - name: Build application
+      run: ./gradlew build -x test
+      env:
+        CI: true
+
+    - name: Upload test reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-reports
+        path: |
+          build/reports/tests/
+          build/test-results/
+
+    - name: Upload build reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: build-reports
+        path: |
+          build/reports/ktlint/
