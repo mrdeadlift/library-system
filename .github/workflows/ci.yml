@@ -55,16 +55,6 @@ jobs:
           sleep 2
         done
 
-    - name: Run database migrations
-      run: ./gradlew flywayMigrate
-      env:
-        CI: false
-
-    - name: Generate jOOQ classes
-      run: ./gradlew jooqCodegen
-      env:
-        CI: false
-
     - name: Run lint checks
       run: ./gradlew ktlintCheck
       env:
