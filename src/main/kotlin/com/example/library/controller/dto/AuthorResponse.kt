@@ -14,8 +14,6 @@ data class AuthorResponse(
     val name: String,
     /** 生年月日 */
     val birthDate: LocalDate,
-    /** 年齢 */
-    val age: Int,
     /** 作成日時 */
     val createdAt: LocalDateTime,
     /** 更新日時 */
@@ -30,7 +28,6 @@ data class AuthorResponse(
                 id = author.id ?: throw IllegalStateException("著者IDが設定されていません"),
                 name = author.name,
                 birthDate = author.birthDate,
-                age = author.getAge(),
                 createdAt = author.createdAt,
                 updatedAt = author.updatedAt,
             )

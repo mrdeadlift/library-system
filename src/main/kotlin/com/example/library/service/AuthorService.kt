@@ -126,8 +126,7 @@ class AuthorService(
             throw ResourceNotFoundException("指定されたID=$id の著者が見つかりません")
         }
 
-        // TODO: 書籍との関連チェック（将来的に書籍管理機能実装時に追加予定）
-        // 現在は著者テーブルから直接削除
+        // 注意: 書籍との関連チェックは未実装（将来的に外部キー制約違反のハンドリング追加予定）
 
         val deleted = authorRepository.deleteById(id)
         if (!deleted) {
