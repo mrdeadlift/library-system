@@ -34,8 +34,8 @@ data class BookResponse(
         /**
          * ドメインオブジェクトからレスポンスDTOに変換
          */
-        fun from(book: Book): BookResponse {
-            return BookResponse(
+        fun from(book: Book): BookResponse =
+            BookResponse(
                 id = book.id ?: throw IllegalStateException("書籍IDが設定されていません"),
                 title = book.title,
                 price = book.price,
@@ -47,6 +47,5 @@ data class BookResponse(
                 createdAt = book.createdAt,
                 updatedAt = book.updatedAt,
             )
-        }
     }
 }

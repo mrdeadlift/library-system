@@ -138,7 +138,5 @@ class AuthorService(
     /**
      * 著者が存在するかチェック
      */
-    fun existsById(id: Long): Boolean {
-        return authorRepository.existsById(id)
-    }
+    fun existsById(id: Long): Boolean = authorRepository.existsById(id)
 }

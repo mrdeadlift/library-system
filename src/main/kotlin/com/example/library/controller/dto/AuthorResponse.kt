@@ -25,8 +25,8 @@ data class AuthorResponse(
         /**
          * ドメインオブジェクトからレスポンスDTOに変換
          */
-        fun from(author: Author): AuthorResponse {
-            return AuthorResponse(
+        fun from(author: Author): AuthorResponse =
+            AuthorResponse(
                 id = author.id ?: throw IllegalStateException("著者IDが設定されていません"),
                 name = author.name,
                 birthDate = author.birthDate,
@@ -34,6 +34,5 @@ data class AuthorResponse(
                 createdAt = author.createdAt,
                 updatedAt = author.updatedAt,
             )
-        }
     }
 }

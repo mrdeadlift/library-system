@@ -44,14 +44,13 @@ data class Book(
         title: String,
         price: BigDecimal,
         authors: List<Author>,
-    ): Book {
-        return copy(
+    ): Book =
+        copy(
             title = title,
             price = price,
             authors = authors,
             updatedAt = LocalDateTime.now(),
         )
-    }
 
     /**
      * 出版状況を変更する

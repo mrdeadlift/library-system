@@ -176,7 +176,8 @@ class BookService(
         // ドメインオブジェクトで更新（バリデーションが実行される）
         val updatedBook =
             try {
-                existingBook.update(request.title, request.price, authors)
+                existingBook
+                    .update(request.title, request.price, authors)
                     .updatePublicationStatus(request.publicationStatus)
             } catch (e: IllegalStateException) {
                 throw IllegalArgumentException("出版状況の更新に失敗しました: ${e.message}", e)
@@ -287,9 +288,7 @@ class BookService(
     /**
      * 書籍が存在するかチェック
      */
-    fun existsById(id: Long): Boolean {
-        return bookRepository.existsById(id)
-    }
+    fun existsById(id: Long): Boolean = bookRepository.existsById(id)
 
     /**
      * 出版済み書籍一覧を取得（ページネーション対応）
@@ -297,9 +296,7 @@ class BookService(
     fun findPublishedBooks(
         pageNumber: Int = 0,
         pageSize: Int = 20,
-    ): PagedResponse<BookResponse> {
-        return findByPublicationStatus(PublicationStatus.PUBLISHED, pageNumber, pageSize)
-    }
+    ): PagedResponse<BookResponse> = findByPublicationStatus(PublicationStatus.PUBLISHED, pageNumber, pageSize)
 
     /**
      * 未出版書籍一覧を取得（ページネーション対応）
@@ -307,7 +304,5 @@ class BookService(
     fun findUnpublishedBooks(
         pageNumber: Int = 0,
         pageSize: Int = 20,
-    ): PagedResponse<BookResponse> {
-        return findByPublicationStatus(PublicationStatus.UNPUBLISHED, pageNumber, pageSize)
-    }
+    ): PagedResponse<BookResponse> = findByPublicationStatus(PublicationStatus.UNPUBLISHED, pageNumber, pageSize)
 }

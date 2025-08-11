@@ -50,12 +50,12 @@ class BookManagementIntegrationTest {
         // === STEP 1: 著者を登録する ===
         val author1Request = AuthorCreateRequest("村上春樹", LocalDate.of(1949, 1, 12))
         val author1Result =
-            mockMvc.perform(
-                post("/api/authors")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(author1Request)),
-            )
-                .andExpect(status().isCreated)
+            mockMvc
+                .perform(
+                    post("/api/authors")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(author1Request)),
+                ).andExpect(status().isCreated)
                 .andExpect(jsonPath("$.name").value("村上春樹"))
                 .andReturn()
 
@@ -63,12 +63,12 @@ class BookManagementIntegrationTest {
 
         val author2Request = AuthorCreateRequest("東野圭吾", LocalDate.of(1958, 2, 4))
         val author2Result =
-            mockMvc.perform(
-                post("/api/authors")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(author2Request)),
-            )
-                .andExpect(status().isCreated)
+            mockMvc
+                .perform(
+                    post("/api/authors")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(author2Request)),
+                ).andExpect(status().isCreated)
                 .andReturn()
 
         val author2Id = objectMapper.readTree(author2Result.response.contentAsString)["id"].asLong()
@@ -83,12 +83,12 @@ class BookManagementIntegrationTest {
             )
 
         val book1Result =
-            mockMvc.perform(
-                post("/api/books")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(book1Request)),
-            )
-                .andExpect(status().isCreated)
+            mockMvc
+                .perform(
+                    post("/api/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(book1Request)),
+                ).andExpect(status().isCreated)
                 .andExpect(jsonPath("$.title").value("ノルウェイの森"))
                 .andExpect(jsonPath("$.published").value(false))
                 .andExpect(jsonPath("$.authors[0].name").value("村上春樹"))
@@ -106,12 +106,12 @@ class BookManagementIntegrationTest {
             )
 
         val book2Result =
-            mockMvc.perform(
-                post("/api/books")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(book2Request)),
-            )
-                .andExpect(status().isCreated)
+            mockMvc
+                .perform(
+                    post("/api/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(book2Request)),
+                ).andExpect(status().isCreated)
                 .andExpect(jsonPath("$.title").value("海辺のカフカ"))
                 .andExpect(jsonPath("$.published").value(true))
                 .andReturn()
@@ -128,71 +128,79 @@ class BookManagementIntegrationTest {
             )
 
         val book3Result =
-            mockMvc.perform(
-                post("/api/books")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(book3Request)),
-            )
-                .andExpect(status().isCreated)
+            mockMvc
+                .perform(
+                    post("/api/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(book3Request)),
+                ).andExpect(status().isCreated)
                 .andReturn()
 
         val book3Id = objectMapper.readTree(book3Result.response.contentAsString)["id"].asLong()
 
         // === STEP 5: 全書籍の状況確認 ===
-        mockMvc.perform(get("/api/books"))
+        mockMvc
+            .perform(get("/api/books"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.content.length()").value(3))
             .andExpect(jsonPath("$.totalElements").value(3))
 
         // === STEP 6: 出版状況による検索テスト ===
         // 出版済み書籍の検索
-        mockMvc.perform(get("/api/books/published"))
+        mockMvc
+            .perform(get("/api/books/published"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.content.length()").value(2))
             .andExpect(jsonPath("$.content[0].published").value(true))
             .andExpect(jsonPath("$.content[1].published").value(true))
 
         // 未出版書籍の検索
-        mockMvc.perform(get("/api/books/unpublished"))
+        mockMvc
+            .perform(get("/api/books/unpublished"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.content.length()").value(1))
             .andExpect(jsonPath("$.content[0].title").value("ノルウェイの森"))
 
         // === STEP 7: 著者による書籍検索 ===
         // 村上春樹の書籍検索
-        mockMvc.perform(get("/api/books").param("authorId", author1Id.toString()))
+        mockMvc
+            .perform(get("/api/books").param("authorId", author1Id.toString()))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.content.length()").value(2))
 
         // 東野圭吾の書籍検索
-        mockMvc.perform(get("/api/books").param("authorId", author2Id.toString()))
+        mockMvc
+            .perform(get("/api/books").param("authorId", author2Id.toString()))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.content.length()").value(1))
             .andExpect(jsonPath("$.content[0].title").value("容疑者Xの献身"))
 
         // === STEP 8: タイトル検索 ===
-        mockMvc.perform(get("/api/books").param("title", "ノルウェイ"))
+        mockMvc
+            .perform(get("/api/books").param("title", "ノルウェイ"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.content.length()").value(1))
             .andExpect(jsonPath("$.content[0].title").value("ノルウェイの森"))
 
-        mockMvc.perform(get("/api/books").param("title", "カフカ"))
+        mockMvc
+            .perform(get("/api/books").param("title", "カフカ"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.content.length()").value(1))
             .andExpect(jsonPath("$.content[0].title").value("海辺のカフカ"))
 
         // === STEP 9: 書籍の出版状況を変更 ===
         // 未出版書籍を出版済みに変更
-        mockMvc.perform(
-            patch("/api/books/$book1Id/publication-status")
-                .param("status", "PUBLISHED"),
-        )
-            .andExpect(status().isOk)
+        mockMvc
+            .perform(
+                patch("/api/books/$book1Id/publication-status")
+                    .param("status", "PUBLISHED"),
+            ).andExpect(status().isOk)
             .andExpect(jsonPath("$.published").value(true))
             .andExpect(jsonPath("$.publicationStatus").value("PUBLISHED"))
 
         // 出版済み書籍数の確認
-        mockMvc.perform(get("/api/books/published"))
+        mockMvc
+            .perform(get("/api/books/published"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.content.length()").value(3))
 
@@ -206,12 +214,12 @@ class BookManagementIntegrationTest {
             )
 
         val collaborationResult =
-            mockMvc.perform(
-                post("/api/books")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(collaborationBookRequest)),
-            )
-                .andExpect(status().isCreated)
+            mockMvc
+                .perform(
+                    post("/api/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(collaborationBookRequest)),
+                ).andExpect(status().isCreated)
                 .andExpect(jsonPath("$.title").value("共著作品"))
                 .andExpect(jsonPath("$.authors.length()").value(2))
                 .andExpect(jsonPath("$.authorNames").value("村上春樹, 東野圭吾"))
@@ -223,24 +231,26 @@ class BookManagementIntegrationTest {
         // 新しい著者を作成
         val author3Request = AuthorCreateRequest("川端康成", LocalDate.of(1899, 6, 14))
         val author3Result =
-            mockMvc.perform(
-                post("/api/authors")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(author3Request)),
-            )
-                .andExpect(status().isCreated)
+            mockMvc
+                .perform(
+                    post("/api/authors")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(author3Request)),
+                ).andExpect(status().isCreated)
                 .andReturn()
 
         val author3Id = objectMapper.readTree(author3Result.response.contentAsString)["id"].asLong()
 
         // 共著書籍に3人目の著者を追加
-        mockMvc.perform(post("/api/books/$collaborationBookId/authors/$author3Id"))
+        mockMvc
+            .perform(post("/api/books/$collaborationBookId/authors/$author3Id"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.authors.length()").value(3))
             .andExpect(jsonPath("$.authorNames").value("村上春樹, 東野圭吾, 川端康成"))
 
         // 1人の著者を削除
-        mockMvc.perform(delete("/api/books/$collaborationBookId/authors/$author3Id"))
+        mockMvc
+            .perform(delete("/api/books/$collaborationBookId/authors/$author3Id"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.authors.length()").value(2))
             .andExpect(jsonPath("$.authorNames").value("村上春樹, 東野圭吾"))
@@ -254,12 +264,12 @@ class BookManagementIntegrationTest {
                 authorIds = listOf(author1Id),
             )
 
-        mockMvc.perform(
-            put("/api/books/$book1Id")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateRequest)),
-        )
-            .andExpect(status().isOk)
+        mockMvc
+            .perform(
+                put("/api/books/$book1Id")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(updateRequest)),
+            ).andExpect(status().isOk)
             .andExpect(jsonPath("$.title").value("ノルウェイの森（改訂版）"))
             .andExpect(jsonPath("$.price").value(1900.00))
 
@@ -274,16 +284,17 @@ class BookManagementIntegrationTest {
                     authorIds = listOf(author1Id),
                 )
 
-            mockMvc.perform(
-                post("/api/books")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(additionalBookRequest)),
-            )
-                .andExpect(status().isCreated)
+            mockMvc
+                .perform(
+                    post("/api/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(additionalBookRequest)),
+                ).andExpect(status().isCreated)
         }
 
         // 1ページ目（20件）
-        mockMvc.perform(get("/api/books").param("page", "0").param("size", "20"))
+        mockMvc
+            .perform(get("/api/books").param("page", "0").param("size", "20"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.content.length()").value(20))
             .andExpect(jsonPath("$.totalElements").value(22)) // 4 + 18
@@ -292,7 +303,8 @@ class BookManagementIntegrationTest {
             .andExpect(jsonPath("$.last").value(false))
 
         // 2ページ目（2件）
-        mockMvc.perform(get("/api/books").param("page", "1").param("size", "20"))
+        mockMvc
+            .perform(get("/api/books").param("page", "1").param("size", "20"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.content.length()").value(2))
             .andExpect(jsonPath("$.first").value(false))
@@ -300,11 +312,11 @@ class BookManagementIntegrationTest {
 
         // === STEP 14: ビジネスルールの確認 ===
         // 出版済み → 未出版への変更（エラーになることを確認）
-        mockMvc.perform(
-            patch("/api/books/$book2Id/publication-status")
-                .param("status", "UNPUBLISHED"),
-        )
-            .andExpect(status().isBadRequest)
+        mockMvc
+            .perform(
+                patch("/api/books/$book2Id/publication-status")
+                    .param("status", "UNPUBLISHED"),
+            ).andExpect(status().isBadRequest)
 
         // 最後の著者を削除しようとする（エラーになることを確認）
         val singleAuthorBookRequest =
@@ -316,52 +328,61 @@ class BookManagementIntegrationTest {
             )
 
         val singleAuthorResult =
-            mockMvc.perform(
-                post("/api/books")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(singleAuthorBookRequest)),
-            )
-                .andExpect(status().isCreated)
+            mockMvc
+                .perform(
+                    post("/api/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(singleAuthorBookRequest)),
+                ).andExpect(status().isCreated)
                 .andReturn()
 
         val singleAuthorBookId = objectMapper.readTree(singleAuthorResult.response.contentAsString)["id"].asLong()
 
-        mockMvc.perform(delete("/api/books/$singleAuthorBookId/authors/$author1Id"))
+        mockMvc
+            .perform(delete("/api/books/$singleAuthorBookId/authors/$author1Id"))
             .andExpect(status().isBadRequest)
 
         // === STEP 15: 削除テスト ===
         // 書籍を削除
-        mockMvc.perform(delete("/api/books/$book3Id"))
+        mockMvc
+            .perform(delete("/api/books/$book3Id"))
             .andExpect(status().isNoContent)
 
         // 削除された書籍が検索されないことを確認
-        mockMvc.perform(get("/api/books/$book3Id"))
+        mockMvc
+            .perform(get("/api/books/$book3Id"))
             .andExpect(status().isNotFound)
 
-        mockMvc.perform(get("/api/books/$book3Id/exists"))
+        mockMvc
+            .perform(get("/api/books/$book3Id/exists"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.exists").value(false))
 
         // === STEP 16: 最終的なデータ状況確認 ===
         // 全体の書籍数確認（削除された1冊を除く）
-        mockMvc.perform(get("/api/books"))
+        mockMvc
+            .perform(get("/api/books"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.totalElements").value(22)) // 4 + 18 + 1 (単著) - 1 (削除) = 22
 
         // 著者別の書籍数確認
-        mockMvc.perform(get("/api/books").param("authorId", author1Id.toString()))
+        mockMvc
+            .perform(get("/api/books").param("authorId", author1Id.toString()))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.totalElements").value(22)) // 村上春樹の書籍（ノルウェイ+海辺+共著+追加18+単著）
 
-        mockMvc.perform(get("/api/books").param("authorId", author2Id.toString()))
+        mockMvc
+            .perform(get("/api/books").param("authorId", author2Id.toString()))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.totalElements").value(1)) // 東野圭吾の書籍（共著1冊のみ残存）
 
         // 出版状況別の確認
-        mockMvc.perform(get("/api/books/published"))
+        mockMvc
+            .perform(get("/api/books/published"))
             .andExpect(status().isOk)
 
-        mockMvc.perform(get("/api/books/unpublished"))
+        mockMvc
+            .perform(get("/api/books/unpublished"))
             .andExpect(status().isOk)
     }
 
@@ -370,12 +391,12 @@ class BookManagementIntegrationTest {
         // === 著者と書籍を作成 ===
         val authorRequest = AuthorCreateRequest("テスト著者", LocalDate.of(1950, 1, 1))
         val authorResult =
-            mockMvc.perform(
-                post("/api/authors")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(authorRequest)),
-            )
-                .andExpect(status().isCreated)
+            mockMvc
+                .perform(
+                    post("/api/authors")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(authorRequest)),
+                ).andExpect(status().isCreated)
                 .andReturn()
 
         val authorId = objectMapper.readTree(authorResult.response.contentAsString)["id"].asLong()
@@ -389,23 +410,25 @@ class BookManagementIntegrationTest {
             )
 
         val bookResult =
-            mockMvc.perform(
-                post("/api/books")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(bookRequest)),
-            )
-                .andExpect(status().isCreated)
+            mockMvc
+                .perform(
+                    post("/api/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(bookRequest)),
+                ).andExpect(status().isCreated)
                 .andReturn()
 
         val bookId = objectMapper.readTree(bookResult.response.contentAsString)["id"].asLong()
 
         // === 著者を削除 ===
-        mockMvc.perform(delete("/api/authors/$authorId"))
+        mockMvc
+            .perform(delete("/api/authors/$authorId"))
             .andExpect(status().isNoContent)
 
         // === 書籍が適切に処理されているか確認 ===
         // 著者削除後の書籍状態確認（著者が存在しないためアクセスできない）
-        mockMvc.perform(get("/api/books/$bookId"))
+        mockMvc
+            .perform(get("/api/books/$bookId"))
             .andExpect(status().isBadRequest)
     }
 
@@ -416,12 +439,12 @@ class BookManagementIntegrationTest {
         repeat(10) { i ->
             val authorRequest = AuthorCreateRequest("著者$i", LocalDate.of(1950 + i, 1, 1))
             val result =
-                mockMvc.perform(
-                    post("/api/authors")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(authorRequest)),
-                )
-                    .andExpect(status().isCreated)
+                mockMvc
+                    .perform(
+                        post("/api/authors")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(authorRequest)),
+                    ).andExpect(status().isCreated)
                     .andReturn()
 
             authorIds.add(objectMapper.readTree(result.response.contentAsString)["id"].asLong())
@@ -438,28 +461,31 @@ class BookManagementIntegrationTest {
                     authorIds = randomAuthorIds,
                 )
 
-            mockMvc.perform(
-                post("/api/books")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(bookRequest)),
-            )
-                .andExpect(status().isCreated)
+            mockMvc
+                .perform(
+                    post("/api/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(bookRequest)),
+                ).andExpect(status().isCreated)
         }
 
         // === パフォーマンス確認 ===
         val startTime = System.currentTimeMillis()
 
         // 大量データでの一覧取得
-        mockMvc.perform(get("/api/books"))
+        mockMvc
+            .perform(get("/api/books"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.totalElements").value(100))
 
         // 検索パフォーマンス
-        mockMvc.perform(get("/api/books").param("title", "大量テスト"))
+        mockMvc
+            .perform(get("/api/books").param("title", "大量テスト"))
             .andExpect(status().isOk)
 
         // 著者別検索パフォーマンス
-        mockMvc.perform(get("/api/books").param("authorId", authorIds.first().toString()))
+        mockMvc
+            .perform(get("/api/books").param("authorId", authorIds.first().toString()))
             .andExpect(status().isOk)
 
         val endTime = System.currentTimeMillis()

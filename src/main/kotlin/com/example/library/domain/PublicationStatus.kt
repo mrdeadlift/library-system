@@ -19,32 +19,29 @@ enum class PublicationStatus {
      * 指定された新しい状態に遷移可能かチェック
      * ビジネスルール: 出版済み → 未出版への変更は不可
      */
-    fun canTransitionTo(newStatus: PublicationStatus): Boolean {
-        return when (this) {
+    fun canTransitionTo(newStatus: PublicationStatus): Boolean =
+        when (this) {
             UNPUBLISHED -> true // 未出版からはどちらにも変更可能
             PUBLISHED -> newStatus == PUBLISHED // 出版済みからは出版済みのみ
         }
-    }
 
     /**
      * jOOQ enum型への変換
      */
-    fun toJooqEnum(): JooqPublicationStatus {
-        return when (this) {
+    fun toJooqEnum(): JooqPublicationStatus =
+        when (this) {
             UNPUBLISHED -> JooqPublicationStatus.UNPUBLISHED
             PUBLISHED -> JooqPublicationStatus.PUBLISHED
         }
-    }
 
     companion object {
         /**
          * jOOQ enum型からドメイン型への変換
          */
-        fun fromJooqEnum(jooqStatus: JooqPublicationStatus): PublicationStatus {
-            return when (jooqStatus) {
+        fun fromJooqEnum(jooqStatus: JooqPublicationStatus): PublicationStatus =
+            when (jooqStatus) {
                 JooqPublicationStatus.UNPUBLISHED -> UNPUBLISHED
                 JooqPublicationStatus.PUBLISHED -> PUBLISHED
             }
-        }
     }
 }

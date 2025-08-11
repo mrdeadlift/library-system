@@ -17,8 +17,9 @@ class GlobalExceptionHandler {
      * リソースが見つからない場合
      */
     @ExceptionHandler(ResourceNotFoundException::class)
-    fun handleResourceNotFound(ex: ResourceNotFoundException): ResponseEntity<ErrorResponse> {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+    fun handleResourceNotFound(ex: ResourceNotFoundException): ResponseEntity<ErrorResponse> =
+        ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
             .body(
                 ErrorResponse(
                     code = "RESOURCE_NOT_FOUND",
@@ -26,14 +27,14 @@ class GlobalExceptionHandler {
                     details = null,
                 ),
             )
-    }
 
     /**
      * ビジネスルール違反
      */
     @ExceptionHandler(BusinessRuleViolationException::class)
-    fun handleBusinessRuleViolation(ex: BusinessRuleViolationException): ResponseEntity<ErrorResponse> {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    fun handleBusinessRuleViolation(ex: BusinessRuleViolationException): ResponseEntity<ErrorResponse> =
+        ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
             .body(
                 ErrorResponse(
                     code = "BUSINESS_RULE_VIOLATION",
@@ -41,14 +42,14 @@ class GlobalExceptionHandler {
                     details = null,
                 ),
             )
-    }
 
     /**
      * 重複リソース例外
      */
     @ExceptionHandler(DuplicateResourceException::class)
-    fun handleDuplicateResource(ex: DuplicateResourceException): ResponseEntity<ErrorResponse> {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
+    fun handleDuplicateResource(ex: DuplicateResourceException): ResponseEntity<ErrorResponse> =
+        ResponseEntity
+            .status(HttpStatus.CONFLICT)
             .body(
                 ErrorResponse(
                     code = "DUPLICATE_RESOURCE",
@@ -56,7 +57,6 @@ class GlobalExceptionHandler {
                     details = null,
                 ),
             )
-    }
 
     /**
      * Bean Validation例外
@@ -70,7 +70,8 @@ class GlobalExceptionHandler {
 
         val errorMessage = fieldErrors.entries.joinToString(", ") { "${it.key}: ${it.value}" }
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
             .body(
                 ErrorResponse(
                     code = "VALIDATION_ERROR",
@@ -84,8 +85,9 @@ class GlobalExceptionHandler {
      * カスタムバリデーション例外
      */
     @ExceptionHandler(ValidationException::class)
-    fun handleCustomValidationError(ex: ValidationException): ResponseEntity<ErrorResponse> {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    fun handleCustomValidationError(ex: ValidationException): ResponseEntity<ErrorResponse> =
+        ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
             .body(
                 ErrorResponse(
                     code = "VALIDATION_ERROR",
@@ -93,14 +95,14 @@ class GlobalExceptionHandler {
                     details = ex.fieldErrors.ifEmpty { null },
                 ),
             )
-    }
 
     /**
      * IllegalArgumentException
      */
     @ExceptionHandler(IllegalArgumentException::class)
-    fun handleIllegalArgument(ex: IllegalArgumentException): ResponseEntity<ErrorResponse> {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    fun handleIllegalArgument(ex: IllegalArgumentException): ResponseEntity<ErrorResponse> =
+        ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
             .body(
                 ErrorResponse(
                     code = "INVALID_ARGUMENT",
@@ -108,14 +110,14 @@ class GlobalExceptionHandler {
                     details = null,
                 ),
             )
-    }
 
     /**
      * IllegalStateException
      */
     @ExceptionHandler(IllegalStateException::class)
-    fun handleIllegalState(ex: IllegalStateException): ResponseEntity<ErrorResponse> {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    fun handleIllegalState(ex: IllegalStateException): ResponseEntity<ErrorResponse> =
+        ResponseEntity
+            .status(HttpStatus.BAD_REQUEST)
             .body(
                 ErrorResponse(
                     code = "INVALID_STATE",
@@ -123,7 +125,6 @@ class GlobalExceptionHandler {
                     details = null,
                 ),
             )
-    }
 
     /**
      * その他の予期しない例外
@@ -131,7 +132,8 @@ class GlobalExceptionHandler {
     @ExceptionHandler(Exception::class)
     fun handleGenericException(ex: Exception): ResponseEntity<ErrorResponse> {
         // 本番環境では詳細なエラー情報を隠す
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(
                 ErrorResponse(
                     code = "INTERNAL_SERVER_ERROR",

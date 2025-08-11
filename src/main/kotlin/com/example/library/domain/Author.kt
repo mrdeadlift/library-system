@@ -36,21 +36,19 @@ data class Author(
     fun update(
         name: String,
         birthDate: LocalDate,
-    ): Author {
-        return copy(
+    ): Author =
+        copy(
             name = name,
             birthDate = birthDate,
             updatedAt = LocalDateTime.now(),
         )
-    }
 
     /**
      * 現在の年齢を計算する
      */
-    fun getAge(): Int {
-        return LocalDate.now().year - birthDate.year -
+    fun getAge(): Int =
+        LocalDate.now().year - birthDate.year -
             if (LocalDate.now().dayOfYear < birthDate.dayOfYear) 1 else 0
-    }
 
     /**
      * 著者名の表示用フォーマット
