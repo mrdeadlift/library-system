@@ -22,15 +22,14 @@ class AuthorRepositoryTest {
     @Autowired
     private lateinit var authorRepository: AuthorRepository
 
-    private lateinit var testAuthor: Author
+    private val testAuthor =
+        Author(
+            name = "夏目漱石",
+            birthDate = LocalDate.of(1867, 2, 9),
+        )
 
     @BeforeEach
     fun setup() {
-        testAuthor =
-            Author(
-                name = "夏目漱石",
-                birthDate = LocalDate.of(1867, 2, 9),
-            )
     }
 
     @Test

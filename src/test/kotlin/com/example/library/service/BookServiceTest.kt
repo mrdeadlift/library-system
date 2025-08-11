@@ -38,30 +38,28 @@ class BookServiceTest {
     @InjectMocks
     private lateinit var bookService: BookService
 
-    private lateinit var testAuthor: Author
-    private lateinit var testBook: Book
+    private val testAuthor =
+        Author(
+            id = 1L,
+            name = "村上春樹",
+            birthDate = LocalDate.of(1949, 1, 12),
+            createdAt = LocalDateTime.now(),
+            updatedAt = LocalDateTime.now(),
+        )
+
+    private val testBook =
+        Book(
+            id = 1L,
+            title = "ノルウェイの森",
+            price = BigDecimal("1800.00"),
+            publicationStatus = PublicationStatus.PUBLISHED,
+            authors = listOf(testAuthor),
+            createdAt = LocalDateTime.now(),
+            updatedAt = LocalDateTime.now(),
+        )
 
     @BeforeEach
     fun setup() {
-        testAuthor =
-            Author(
-                id = 1L,
-                name = "村上春樹",
-                birthDate = LocalDate.of(1949, 1, 12),
-                createdAt = LocalDateTime.now(),
-                updatedAt = LocalDateTime.now(),
-            )
-
-        testBook =
-            Book(
-                id = 1L,
-                title = "ノルウェイの森",
-                price = BigDecimal("1800.00"),
-                publicationStatus = PublicationStatus.PUBLISHED,
-                authors = listOf(testAuthor),
-                createdAt = LocalDateTime.now(),
-                updatedAt = LocalDateTime.now(),
-            )
     }
 
     @Test

@@ -43,27 +43,26 @@ class BookRepositoryTest {
     @Autowired
     private lateinit var authorRepository: AuthorRepository
 
+    private val authorTemplate1 =
+        Author(
+            name = "村上春樹",
+            birthDate = LocalDate.of(1949, 1, 12),
+        )
+
+    private val authorTemplate2 =
+        Author(
+            name = "東野圭吾",
+            birthDate = LocalDate.of(1958, 2, 4),
+        )
+
     private lateinit var testAuthor1: Author
     private lateinit var testAuthor2: Author
 
     @BeforeEach
     fun setupTestData() {
         // テスト用著者を作成
-        testAuthor1 =
-            authorRepository.save(
-                Author(
-                    name = "村上春樹",
-                    birthDate = LocalDate.of(1949, 1, 12),
-                ),
-            )
-
-        testAuthor2 =
-            authorRepository.save(
-                Author(
-                    name = "東野圭吾",
-                    birthDate = LocalDate.of(1958, 2, 4),
-                ),
-            )
+        testAuthor1 = authorRepository.save(authorTemplate1)
+        testAuthor2 = authorRepository.save(authorTemplate2)
     }
 
     @Test

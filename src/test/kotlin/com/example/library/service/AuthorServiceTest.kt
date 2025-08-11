@@ -31,18 +31,17 @@ class AuthorServiceTest {
     @InjectMocks
     private lateinit var authorService: AuthorService
 
-    private lateinit var testAuthor: Author
+    private val testAuthor =
+        Author(
+            id = 1L,
+            name = "夏目漱石",
+            birthDate = LocalDate.of(1867, 2, 9),
+            createdAt = LocalDateTime.now(),
+            updatedAt = LocalDateTime.now(),
+        )
 
     @BeforeEach
     fun setup() {
-        testAuthor =
-            Author(
-                id = 1L,
-                name = "夏目漱石",
-                birthDate = LocalDate.of(1867, 2, 9),
-                createdAt = LocalDateTime.now(),
-                updatedAt = LocalDateTime.now(),
-            )
     }
 
     @Test
