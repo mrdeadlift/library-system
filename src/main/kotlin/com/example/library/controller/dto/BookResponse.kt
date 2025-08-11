@@ -11,33 +11,24 @@ import java.time.LocalDateTime
 data class BookResponse(
     /** 書籍ID */
     val id: Long,
-    
     /** 書籍タイトル */
     val title: String,
-    
     /** 価格 */
     val price: BigDecimal,
-    
     /** フォーマット済み価格 */
     val formattedPrice: String,
-    
     /** 出版状況 */
     val publicationStatus: PublicationStatus,
-    
     /** 出版済みかどうか */
     val isPublished: Boolean,
-    
     /** 著者リスト */
     val authors: List<AuthorResponse>,
-    
     /** 著者名（カンマ区切り） */
     val authorNames: String,
-    
     /** 作成日時 */
     val createdAt: LocalDateTime,
-    
     /** 更新日時 */
-    val updatedAt: LocalDateTime
+    val updatedAt: LocalDateTime,
 ) {
     companion object {
         /**
@@ -54,7 +45,7 @@ data class BookResponse(
                 authors = book.authors.map { AuthorResponse.from(it) },
                 authorNames = book.getAuthorNames(),
                 createdAt = book.createdAt,
-                updatedAt = book.updatedAt
+                updatedAt = book.updatedAt,
             )
         }
     }

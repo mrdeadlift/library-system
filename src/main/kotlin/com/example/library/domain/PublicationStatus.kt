@@ -9,21 +9,23 @@ import com.example.library.jooq.enums.PublicationStatus as JooqPublicationStatus
 enum class PublicationStatus {
     /** 未出版 */
     UNPUBLISHED,
-    
+
     /** 出版済み */
-    PUBLISHED;
-    
+    PUBLISHED,
+
+    ;
+
     /**
      * 指定された新しい状態に遷移可能かチェック
      * ビジネスルール: 出版済み → 未出版への変更は不可
      */
     fun canTransitionTo(newStatus: PublicationStatus): Boolean {
         return when (this) {
-            UNPUBLISHED -> true  // 未出版からはどちらにも変更可能
-            PUBLISHED -> newStatus == PUBLISHED  // 出版済みからは出版済みのみ
+            UNPUBLISHED -> true // 未出版からはどちらにも変更可能
+            PUBLISHED -> newStatus == PUBLISHED // 出版済みからは出版済みのみ
         }
     }
-    
+
     /**
      * jOOQ enum型への変換
      */
@@ -33,7 +35,7 @@ enum class PublicationStatus {
             PUBLISHED -> JooqPublicationStatus.PUBLISHED
         }
     }
-    
+
     companion object {
         /**
          * jOOQ enum型からドメイン型への変換

@@ -15,11 +15,11 @@ class ResourceNotFoundException(message: String) : RuntimeException(message)
  */
 class InvalidPublicationStatusTransitionException(
     currentStatus: String,
-    requestedStatus: String
+    requestedStatus: String,
 ) : BusinessRuleViolationException(
-    "出版状況を${currentStatus}から${requestedStatus}に変更することはできません。" +
-    "出版済みの書籍を未出版に戻すことはできません。"
-)
+        "出版状況を${currentStatus}から${requestedStatus}に変更することはできません。" +
+            "出版済みの書籍を未出版に戻すことはできません。",
+    )
 
 /**
  * 書籍の著者制約違反例外
@@ -34,4 +34,7 @@ class DuplicateResourceException(message: String) : BusinessRuleViolationExcepti
 /**
  * バリデーション違反例外
  */
-class ValidationException(message: String, val fieldErrors: Map<String, String> = emptyMap()) : RuntimeException(message)
+class ValidationException(
+    message: String,
+    val fieldErrors: Map<String, String> = emptyMap(),
+) : RuntimeException(message)

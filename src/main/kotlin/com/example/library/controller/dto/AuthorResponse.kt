@@ -10,21 +10,16 @@ import java.time.LocalDateTime
 data class AuthorResponse(
     /** 著者ID */
     val id: Long,
-    
     /** 著者名 */
     val name: String,
-    
     /** 生年月日 */
     val birthDate: LocalDate,
-    
     /** 年齢 */
     val age: Int,
-    
     /** 作成日時 */
     val createdAt: LocalDateTime,
-    
     /** 更新日時 */
-    val updatedAt: LocalDateTime
+    val updatedAt: LocalDateTime,
 ) {
     companion object {
         /**
@@ -37,7 +32,7 @@ data class AuthorResponse(
                 birthDate = author.birthDate,
                 age = author.getAge(),
                 createdAt = author.createdAt,
-                updatedAt = author.updatedAt
+                updatedAt = author.updatedAt,
             )
         }
     }
