@@ -12,7 +12,6 @@ plugins {
 	id 'org.jooq.jooq-codegen-gradle' version '3.19.24'
 	id 'org.flywaydb.flyway' version '11.2.0'
 	id 'org.jlleitschuh.gradle.ktlint' version '13.0.0'
-	id 'io.gitlab.arturbosch.detekt' version '1.23.3'
 }
 
 group = 'com.example'
@@ -24,11 +23,6 @@ java {
 	}
 }
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-}
 
 repositories {
 	mavenCentral()
@@ -41,10 +35,8 @@ dependencies {
 	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.flywaydb:flyway-database-postgresql'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect'
-	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
 	runtimeOnly 'org.postgresql:postgresql'
-	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 	testImplementation 'org.mockito.kotlin:mockito-kotlin:5.1.0'
@@ -54,8 +46,6 @@ dependencies {
 	// jOOQ code generation dependencies
 	jooqCodegen 'org.postgresql:postgresql'
 	
-	// detekt用Kotlin互換性対応
-	detektPlugins 'io.gitlab.arturbosch.detekt:detekt-formatting:1.23.3'
 }
 
 kotlin {
@@ -93,17 +83,13 @@ tasks.named('test') {
 // Lint統合: テスト実行前にlintチェックを行う
 tasks.named('test').configure {
 	dependsOn 'ktlintCheck'
-	// detektのKotlin互換性問題により一時的に無効化
-	// dependsOn 'detekt'
 }
 
 // lint関連のタスク統合
 tasks.register('lint') {
 	dependsOn 'ktlintCheck'
-	// detektのKotlin互換性問題により一時的に無効化
-	// dependsOn 'detekt'
 	group = 'verification'
-	description = 'Run all lint checks (currently ktlint only due to Kotlin version compatibility)'
+	description = 'Run lint checks'
 }
 
 tasks.register('lintFix') {
@@ -161,35 +147,4 @@ ktlint {
 	}
 }
 
-// detekt configuration
-detekt {
-	toolVersion = "1.23.3"
-	config.setFrom(file('config/detekt/detekt.yml'))
-	buildUponDefaultConfig = true
-	allRules = false
-	
-	source.setFrom(files('src/main/kotlin'))
-	baseline = file('config/detekt/baseline.xml')
-	
-	// jOOQ自動生成コードを除外
-	ignoreFailures = false
-	
-	// CI環境での設定
-	if (System.getenv('CI') == 'true') {
-		ignoreFailures = false
-		parallel = true
-	}
-}
 
-// CI環境でのキャッシュ最適化
-if (System.getenv('CI') == 'true') {
-	tasks.withType(Test) {
-		outputs.upToDateWhen { false }
-	}
-	
-	tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
-		kotlinOptions {
-			incremental = false
-		}
-	}
-}
