@@ -9,7 +9,7 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:16
@@ -58,12 +58,12 @@ jobs:
     - name: Run database migrations
       run: ./gradlew flywayMigrate
       env:
-        CI: true
+        CI: false
 
     - name: Generate jOOQ classes
       run: ./gradlew jooqCodegen
       env:
-        CI: true
+        CI: false
 
     - name: Run lint checks
       run: ./gradlew ktlintCheck
