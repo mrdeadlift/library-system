@@ -11,6 +11,8 @@ plugins {
 	id 'io.spring.dependency-management' version '1.1.7'
 	id 'org.jooq.jooq-codegen-gradle' version '3.19.24'
 	id 'org.flywaydb.flyway' version '11.2.0'
+	id 'org.jlleitschuh.gradle.ktlint' version '12.1.0'
+	id 'io.gitlab.arturbosch.detekt' version '1.23.3'
 }
 
 group = 'com.example'
@@ -45,11 +47,15 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
+	testImplementation 'org.mockito.kotlin:mockito-kotlin:5.1.0'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testRuntimeOnly 'com.h2database:h2'
 	
 	// jOOQ code generation dependencies
 	jooqCodegen 'org.postgresql:postgresql'
+	
+	// detekt用Kotlin互換性対応
+	detektPlugins 'io.gitlab.arturbosch.detekt:detekt-formatting:1.23.3'
 }
 
 kotlin {
@@ -71,6 +77,28 @@ tasks.named('test') {
 	// テストのトランザクション管理とデータベース初期化の安定性向上
 	systemProperty 'spring.test.database.replace', 'any'
 	systemProperty 'spring.sql.init.mode', 'always'
+}
+
+// Lint統合: テスト実行前にlintチェックを行う
+tasks.named('test').configure {
+	dependsOn 'ktlintCheck'
+	// detektのKotlin互換性問題により一時的に無効化
+	// dependsOn 'detekt'
+}
+
+// lint関連のタスク統合
+tasks.register('lint') {
+	dependsOn 'ktlintCheck'
+	// detektのKotlin互換性問題により一時的に無効化
+	// dependsOn 'detekt'
+	group = 'verification'
+	description = 'Run all lint checks (currently ktlint only due to Kotlin version compatibility)'
+}
+
+tasks.register('lintFix') {
+	dependsOn 'ktlintFormat'
+	group = 'formatting'
+	description = 'Fix all auto-correctable lint issues'
 }
 
 // Flyway configuration
@@ -108,4 +136,30 @@ jooq {
 			}
 		}
 	}
+}
+
+// ktlint configuration
+ktlint {
+	version = "1.0.1"
+	android = false
+	ignoreFailures = false
+	baseline = file('config/ktlint/baseline.xml')
+	
+	filter {
+		exclude('**/jooq/**')  // jOOQ自動生成コードを除外
+	}
+}
+
+// detekt configuration
+detekt {
+	toolVersion = "1.23.3"
+	config.setFrom(file('config/detekt/detekt.yml'))
+	buildUponDefaultConfig = true
+	allRules = false
+	
+	source.setFrom(files('src/main/kotlin'))
+	baseline = file('config/detekt/baseline.xml')
+	
+	// jOOQ自動生成コードを除外
+	ignoreFailures = false
 }
