@@ -138,7 +138,7 @@ class AuthorRepositoryTest {
     fun `findByNameContaining - 正常系`() {
         // Given
         authorRepository.save(testAuthor)
-        // 夏目漱石の本名
+        // 夏目漱石の本名ー
         authorRepository.save(
             Author(
                 name = "夏目金之助",
@@ -233,7 +233,7 @@ class AuthorRepositoryTest {
         // 同じ名前でIDが異なる場合
         assertFalse(authorRepository.existsByNameAndIdNot("夏目漱石", savedAuthor1.id!!))
         // 異なる名前でIDが同じ場合
-        assertFalse(authorRepository.existsByNameAndIdNot("存在しない著者", savedAuthor1.id!!))
+        assertFalse(authorRepository.existsByNameAndIdNot("存在しない著者", savedAuthor1.id))
         // 存在する名前で異なるIDの場合
         assertTrue(authorRepository.existsByNameAndIdNot("夏目漱石", savedAuthor2.id!!))
     }
@@ -283,7 +283,7 @@ class AuthorRepositoryTest {
 
         // Then
         assertTrue(deleted)
-        assertNull(authorRepository.findById(savedAuthor.id!!))
+        assertNull(authorRepository.findById(savedAuthor.id))
     }
 
     @Test
