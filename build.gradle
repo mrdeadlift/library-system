@@ -1,6 +1,7 @@
 buildscript {
 	dependencies {
 		classpath 'org.postgresql:postgresql:42.7.2'
+        classpath "org.flywaydb:flyway-database-postgresql:11.2.0"
 	}
 }
 
@@ -42,10 +43,10 @@ dependencies {
 	testImplementation 'org.mockito.kotlin:mockito-kotlin:5.1.0'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testRuntimeOnly 'com.h2database:h2'
-	
+
 	// jOOQ code generation dependencies
 	jooqCodegen 'org.postgresql:postgresql'
-	
+
 }
 
 kotlin {
@@ -56,18 +57,18 @@ kotlin {
 
 tasks.named('test') {
 	useJUnitPlatform()
-	
+
 	// テスト環境の統一化: タイムゾーンと文字エンコーディングの設定
 	jvmArgs = [
 		'-Duser.timezone=Asia/Tokyo',
 		'-Dfile.encoding=UTF-8',
 		'-Djava.awt.headless=true'
 	]
-	
+
 	// テストのトランザクション管理とデータベース初期化の安定性向上
 	systemProperty 'spring.test.database.replace', 'any'
 	systemProperty 'spring.sql.init.mode', 'always'
-	
+
 	// CI環境でのテスト実行最適化
 	if (System.getenv('CI') == 'true') {
 		maxHeapSize = '2g'
@@ -141,7 +142,7 @@ ktlint {
 	android = false
 	ignoreFailures = false
 	baseline = file('config/ktlint/baseline.xml')
-	
+
 	filter {
 		exclude('**/jooq/**')  // jOOQ自動生成コードを除外
 	}
