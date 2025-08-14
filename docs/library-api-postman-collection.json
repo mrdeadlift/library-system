@@ -1,0 +1,552 @@
+{
+	"info": {
+		"name": "図書館管理システム API",
+		"description": "図書館管理システムのREST API全機能のテストコレクション。即実行可能なテストデータを含みます。\n\n使用前の準備：\n1. PostgreSQLをDocker Composeで起動: docker compose up -d postgres\n2. Spring Bootアプリケーション起動: ./gradlew bootRun\n3. ベースURL設定: http://localhost:8080",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "著者管理API",
+			"item": [
+				{
+					"name": "1. 著者一覧取得（初期データ）",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/authors",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "authors"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. 著者詳細取得",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/authors/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "authors", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. 著者新規登録（芥川龍之介）",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"芥川龍之介\",\n  \"birthDate\": \"1892-03-01\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/authors",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "authors"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. 著者情報更新（本名追加）",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"芥川龍之介（新原龍之介）\",\n  \"birthDate\": \"1892-03-01\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/authors/3",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "authors", "3"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. 著者名による部分検索（「芥川」で検索）",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/authors?name=芥川",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "authors"],
+							"query": [
+								{
+									"key": "name",
+									"value": "芥川"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "書籍管理API",
+			"item": [
+				{
+					"name": "1. 書籍一覧取得（初期データ）",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. 書籍詳細取得",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. 書籍新規登録（羅生門）",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"羅生門\",\n  \"price\": 1200.00,\n  \"publicationStatus\": \"PUBLISHED\",\n  \"authorIds\": [3]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/books",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. 書籍情報更新（価格とタイトル修正）",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"羅生門・鼻\",\n  \"price\": 1350.00,\n  \"publicationStatus\": \"PUBLISHED\",\n  \"authorIds\": [3]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/books/3",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "3"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "書籍と著者の関係性管理API",
+			"item": [
+				{
+					"name": "1. 書籍に著者を追加（共著者として夏目漱石を追加）",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books/3/authors/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "3", "authors", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. 書籍から著者を削除（夏目漱石を削除）",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books/3/authors/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "3", "authors", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. 出版状況更新（ビジネスルール違反テスト）",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books/3/publication-status?status=UNPUBLISHED",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "3", "publication-status"],
+							"query": [
+								{
+									"key": "status",
+									"value": "UNPUBLISHED"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ページネーション・フィルタリング機能",
+			"item": [
+				{
+					"name": "1. ページネーション（1ページ目、サイズ2）",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books?page=0&size=2",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. ページネーション（2ページ目、サイズ2）",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books?page=1&size=2",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. タイトル検索（「羅生門」で部分検索）",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books?title=羅生門",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"],
+							"query": [
+								{
+									"key": "title",
+									"value": "羅生門"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. 出版状況フィルタ（出版済みのみ）",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books?status=PUBLISHED",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"],
+							"query": [
+								{
+									"key": "status",
+									"value": "PUBLISHED"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. 著者IDフィルタ（芥川龍之介の書籍）",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books?authorId=3",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"],
+							"query": [
+								{
+									"key": "authorId",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "エラーハンドリングテスト",
+			"item": [
+				{
+					"name": "1. リソース不存在エラー（404）",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/authors/999",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "authors", "999"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. バリデーションエラー - 著者名が空（400）",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"\",\n  \"birthDate\": \"1900-01-01\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/authors",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "authors"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. バリデーションエラー - 未来の生年月日（400）",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"未来人\",\n  \"birthDate\": \"2030-01-01\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/authors",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "authors"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. バリデーションエラー - 負の価格（400）",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"新作小説\",\n  \"price\": -100,\n  \"publicationStatus\": \"PUBLISHED\",\n  \"authorIds\": [1]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/books",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. 重複エラー - 既存著者名での登録（409）",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"夏目漱石\",\n  \"birthDate\": \"1867-02-09\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/authors",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "authors"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6. ビジネスルール違反 - 最後の著者削除（400）",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books/3/authors/3",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "3", "authors", "3"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "7. ビジネスルール違反 - 存在しない著者IDでの書籍作成（404）",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"新作小説\",\n  \"price\": 1000,\n  \"publicationStatus\": \"PUBLISHED\",\n  \"authorIds\": [999]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/books",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "追加テストシナリオ",
+			"item": [
+				{
+					"name": "1. 複数著者による書籍登録（夏目漱石＆村上春樹）",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"時代を超えた対談集\",\n  \"price\": 2500.00,\n  \"publicationStatus\": \"PUBLISHED\",\n  \"authorIds\": [1, 2]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/books",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. 出版予定書籍の登録",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"新作短編集\",\n  \"price\": 1800.00,\n  \"publicationStatus\": \"UNPUBLISHED\",\n  \"authorIds\": [3]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/books",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. 出版予定→出版済みに状況更新",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books/5/publication-status?status=PUBLISHED",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "5", "publication-status"],
+							"query": [
+								{
+									"key": "status",
+									"value": "PUBLISHED"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
