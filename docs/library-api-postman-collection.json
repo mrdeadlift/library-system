@@ -1,22 +1,16 @@
 {
 	"info": {
-		"name": "図書館管理システム API",
-		"description": "図書館管理システムのREST API全機能のテストコレクション。即実行可能なテストデータを含みます。\n\n使用前の準備：\n1. PostgreSQLをDocker Composeで起動: docker compose up -d postgres\n2. Spring Bootアプリケーション起動: ./gradlew bootRun\n3. ベースURL設定: http://localhost:8080",
+		"_postman_id": "library-api-test-collection-v2",
+		"name": "図書館管理システム API テストコレクション（更新版）",
+		"description": "図書館管理システムAPIの包括的テストコレクション\n\n## 実行順序\n1. 著者管理テスト\n2. 書籍管理テスト\n3. 書籍と著者の関連操作テスト\n4. 検索・フィルタリングテスト\n5. ビジネスルール検証テスト\n6. エラーハンドリングテスト\n\n## 前提条件\n- アプリケーションが http://localhost:8080 で起動していること\n- PostgreSQLデータベースが起動していること\n- 既存データと競合しない新しいテストデータを使用",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
-	"variable": [
-		{
-			"key": "baseUrl",
-			"value": "http://localhost:8080",
-			"type": "string"
-		}
-	],
 	"item": [
 		{
-			"name": "著者管理API",
+			"name": "01_著者管理テスト",
 			"item": [
 				{
-					"name": "1. 著者一覧取得（初期データ）",
+					"name": "著者一覧取得",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -29,20 +23,25 @@
 					"response": []
 				},
 				{
-					"name": "2. 著者詳細取得",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/authors/1",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "authors", "1"]
+					"name": "新しい著者登録（江戸川乱歩）",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('authorId_rampo', responseJson.id);",
+									"    pm.test('著者が正常に作成された', function () {",
+									"        pm.expect(responseJson.name).to.eql('江戸川乱歩');",
+									"        pm.expect(responseJson.id).to.be.a('number');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
 						}
-					},
-					"response": []
-				},
-				{
-					"name": "3. 著者新規登録（芥川龍之介）",
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -53,7 +52,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"芥川龍之介\",\n  \"birthDate\": \"1892-03-01\"\n}"
+							"raw": "{\n  \"name\": \"江戸川乱歩\",\n  \"birthDate\": \"1894-10-21\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/authors",
@@ -64,7 +63,60 @@
 					"response": []
 				},
 				{
-					"name": "4. 著者情報更新（本名追加）",
+					"name": "新しい著者登録（横溝正史）",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('authorId_yokomizo', responseJson.id);",
+									"    pm.test('著者が正常に作成された', function () {",
+									"        pm.expect(responseJson.name).to.eql('横溝正史');",
+									"        pm.expect(responseJson.id).to.be.a('number');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"横溝正史\",\n  \"birthDate\": \"1902-05-24\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/authors",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "authors"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "著者詳細取得（江戸川乱歩）",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/authors/{{authorId_rampo}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "authors", "{{authorId_rampo}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "著者情報更新（江戸川乱歩）",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -75,29 +127,29 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"芥川龍之介（新原龍之介）\",\n  \"birthDate\": \"1892-03-01\"\n}"
+							"raw": "{\n  \"name\": \"江戸川乱歩（平井太郎）\",\n  \"birthDate\": \"1894-10-21\"\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/authors/3",
+							"raw": "{{baseUrl}}/api/authors/{{authorId_rampo}}",
 							"host": ["{{baseUrl}}"],
-							"path": ["api", "authors", "3"]
+							"path": ["api", "authors", "{{authorId_rampo}}"]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "5. 著者名による部分検索（「芥川」で検索）",
+					"name": "著者名検索（江戸川）",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/authors?name=芥川",
+							"raw": "{{baseUrl}}/api/authors?name=江戸川",
 							"host": ["{{baseUrl}}"],
 							"path": ["api", "authors"],
 							"query": [
 								{
 									"key": "name",
-									"value": "芥川"
+									"value": "江戸川"
 								}
 							]
 						}
@@ -107,10 +159,10 @@
 			]
 		},
 		{
-			"name": "書籍管理API",
+			"name": "02_書籍管理テスト",
 			"item": [
 				{
-					"name": "1. 書籍一覧取得（初期データ）",
+					"name": "書籍一覧取得",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -123,20 +175,26 @@
 					"response": []
 				},
 				{
-					"name": "2. 書籍詳細取得",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/books/1",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "books", "1"]
+					"name": "新しい書籍登録（怪人二十面相）",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('bookId_kaijin', responseJson.id);",
+									"    pm.test('書籍が正常に作成された', function () {",
+									"        pm.expect(responseJson.title).to.eql('怪人二十面相');",
+									"        pm.expect(responseJson.id).to.be.a('number');",
+									"        pm.expect(responseJson.publicationStatus).to.eql('UNPUBLISHED');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
 						}
-					},
-					"response": []
-				},
-				{
-					"name": "3. 書籍新規登録（羅生門）",
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -147,7 +205,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"羅生門\",\n  \"price\": 1200.00,\n  \"publicationStatus\": \"PUBLISHED\",\n  \"authorIds\": [3]\n}"
+							"raw": "{\n  \"title\": \"怪人二十面相\",\n  \"price\": 1500,\n  \"publicationStatus\": \"UNPUBLISHED\",\n  \"authorIds\": [{{authorId_rampo}}]\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/books",
@@ -158,7 +216,61 @@
 					"response": []
 				},
 				{
-					"name": "4. 書籍情報更新（価格とタイトル修正）",
+					"name": "新しい書籍登録（本陣殺人事件）",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const responseJson = pm.response.json();",
+									"    pm.environment.set('bookId_honjin', responseJson.id);",
+									"    pm.test('書籍が正常に作成された', function () {",
+									"        pm.expect(responseJson.title).to.eql('本陣殺人事件');",
+									"        pm.expect(responseJson.id).to.be.a('number');",
+									"        pm.expect(responseJson.publicationStatus).to.eql('UNPUBLISHED');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"本陣殺人事件\",\n  \"price\": 1800,\n  \"publicationStatus\": \"UNPUBLISHED\",\n  \"authorIds\": [{{authorId_yokomizo}}]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/books",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "書籍詳細取得（怪人二十面相）",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books/{{bookId_kaijin}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "{{bookId_kaijin}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "書籍情報更新（怪人二十面相）",
 					"request": {
 						"method": "PUT",
 						"header": [
@@ -169,60 +281,29 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"title\": \"羅生門・鼻\",\n  \"price\": 1350.00,\n  \"publicationStatus\": \"PUBLISHED\",\n  \"authorIds\": [3]\n}"
+							"raw": "{\n  \"title\": \"怪人二十面相（新装版）\",\n  \"price\": 1600,\n  \"publicationStatus\": \"UNPUBLISHED\",\n  \"authorIds\": [{{authorId_rampo}}]\n}"
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/books/3",
+							"raw": "{{baseUrl}}/api/books/{{bookId_kaijin}}",
 							"host": ["{{baseUrl}}"],
-							"path": ["api", "books", "3"]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "書籍と著者の関係性管理API",
-			"item": [
-				{
-					"name": "1. 書籍に著者を追加（共著者として夏目漱石を追加）",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/books/3/authors/1",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "books", "3", "authors", "1"]
+							"path": ["api", "books", "{{bookId_kaijin}}"]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "2. 書籍から著者を削除（夏目漱石を削除）",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/books/3/authors/1",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "books", "3", "authors", "1"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "3. 出版状況更新（ビジネスルール違反テスト）",
+					"name": "出版状況更新（PUBLISHED）",
 					"request": {
 						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/books/3/publication-status?status=UNPUBLISHED",
+							"raw": "{{baseUrl}}/api/books/{{bookId_kaijin}}/publication-status?status=PUBLISHED",
 							"host": ["{{baseUrl}}"],
-							"path": ["api", "books", "3", "publication-status"],
+							"path": ["api", "books", "{{bookId_kaijin}}", "publication-status"],
 							"query": [
 								{
 									"key": "status",
-									"value": "UNPUBLISHED"
+									"value": "PUBLISHED"
 								}
 							]
 						}
@@ -232,67 +313,80 @@
 			]
 		},
 		{
-			"name": "ページネーション・フィルタリング機能",
+			"name": "03_書籍と著者の関連操作テスト",
 			"item": [
 				{
-					"name": "1. ページネーション（1ページ目、サイズ2）",
+					"name": "書籍への著者追加（横溝正史を怪人二十面相に追加）",
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/books?page=0&size=2",
+							"raw": "{{baseUrl}}/api/books/{{bookId_kaijin}}/authors/{{authorId_yokomizo}}",
 							"host": ["{{baseUrl}}"],
-							"path": ["api", "books"],
-							"query": [
-								{
-									"key": "page",
-									"value": "0"
-								},
-								{
-									"key": "size",
-									"value": "2"
-								}
-							]
+							"path": ["api", "books", "{{bookId_kaijin}}", "authors", "{{authorId_yokomizo}}"]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "2. ページネーション（2ページ目、サイズ2）",
+					"name": "書籍からの著者削除（横溝正史を怪人二十面相から削除）",
 					"request": {
-						"method": "GET",
+						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/books?page=1&size=2",
+							"raw": "{{baseUrl}}/api/books/{{bookId_kaijin}}/authors/{{authorId_yokomizo}}",
 							"host": ["{{baseUrl}}"],
-							"path": ["api", "books"],
-							"query": [
-								{
-									"key": "page",
-									"value": "1"
-								},
-								{
-									"key": "size",
-									"value": "2"
-								}
-							]
+							"path": ["api", "books", "{{bookId_kaijin}}", "authors", "{{authorId_yokomizo}}"]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "3. タイトル検索（「羅生門」で部分検索）",
+					"name": "最後の著者削除試行（エラーテスト）",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('最後の著者削除でエラーが発生する', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 422]);",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.message).to.include('最低1人の著者が必要');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books/{{bookId_kaijin}}/authors/{{authorId_rampo}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "{{bookId_kaijin}}", "authors", "{{authorId_rampo}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "04_検索・フィルタリングテスト",
+			"item": [
+				{
+					"name": "書籍タイトル検索（怪人）",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/books?title=羅生門",
+							"raw": "{{baseUrl}}/api/books?title=怪人",
 							"host": ["{{baseUrl}}"],
 							"path": ["api", "books"],
 							"query": [
 								{
 									"key": "title",
-									"value": "羅生門"
+									"value": "怪人"
 								}
 							]
 						}
@@ -300,7 +394,7 @@
 					"response": []
 				},
 				{
-					"name": "4. 出版状況フィルタ（出版済みのみ）",
+					"name": "出版状況フィルタ（PUBLISHED）",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -319,17 +413,59 @@
 					"response": []
 				},
 				{
-					"name": "5. 著者IDフィルタ（芥川龍之介の書籍）",
+					"name": "出版状況フィルタ（UNPUBLISHED）",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/books?authorId=3",
+							"raw": "{{baseUrl}}/api/books?status=UNPUBLISHED",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"],
+							"query": [
+								{
+									"key": "status",
+									"value": "UNPUBLISHED"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "著者IDフィルタ（江戸川乱歩）",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books?authorId={{authorId_rampo}}",
 							"host": ["{{baseUrl}}"],
 							"path": ["api", "books"],
 							"query": [
 								{
 									"key": "authorId",
+									"value": "{{authorId_rampo}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ページネーションテスト（size=3）",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books?page=0&size=3",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
 									"value": "3"
 								}
 							]
@@ -340,23 +476,96 @@
 			]
 		},
 		{
-			"name": "エラーハンドリングテスト",
+			"name": "05_ビジネスルール検証テスト",
 			"item": [
 				{
-					"name": "1. リソース不存在エラー（404）",
+					"name": "出版済み→未出版変更試行（PATCH・エラーテスト）",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('出版済みから未出版への変更でエラーが発生する', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 422]);",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.message).to.include('PUBLISHEDからUNPUBLISHEDへの変更はできません');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
-						"method": "GET",
+						"method": "PATCH",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/authors/999",
+							"raw": "{{baseUrl}}/api/books/{{bookId_kaijin}}/publication-status?status=UNPUBLISHED",
 							"host": ["{{baseUrl}}"],
-							"path": ["api", "authors", "999"]
+							"path": ["api", "books", "{{bookId_kaijin}}", "publication-status"],
+							"query": [
+								{
+									"key": "status",
+									"value": "UNPUBLISHED"
+								}
+							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "2. バリデーションエラー - 著者名が空（400）",
+					"name": "出版済み→未出版変更試行（PUT・エラーテスト）",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('出版済みから未出版への変更でエラーが発生する', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 422]);",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.message).to.include('PUBLISHEDからUNPUBLISHEDへの変更はできません');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"怪人二十面相（新装版）\",\n  \"price\": 1600,\n  \"publicationStatus\": \"UNPUBLISHED\",\n  \"authorIds\": [{{authorId_rampo}}]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/books/{{bookId_kaijin}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "{{bookId_kaijin}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "重複著者名登録試行（エラーテスト）",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('重複著者名でエラーが発生する', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 409, 422]);",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.message).to.include('既に登録されています');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -367,113 +576,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"\",\n  \"birthDate\": \"1900-01-01\"\n}"
+							"raw": "{\n  \"name\": \"江戸川乱歩\",\n  \"birthDate\": \"1894-10-21\"\n}"
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api/authors",
 							"host": ["{{baseUrl}}"],
 							"path": ["api", "authors"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "3. バリデーションエラー - 未来の生年月日（400）",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"未来人\",\n  \"birthDate\": \"2030-01-01\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/authors",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "authors"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "4. バリデーションエラー - 負の価格（400）",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"title\": \"新作小説\",\n  \"price\": -100,\n  \"publicationStatus\": \"PUBLISHED\",\n  \"authorIds\": [1]\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/books",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "books"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "5. 重複エラー - 既存著者名での登録（409）",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"name\": \"夏目漱石\",\n  \"birthDate\": \"1867-02-09\"\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/authors",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "authors"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "6. ビジネスルール違反 - 最後の著者削除（400）",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/api/books/3/authors/3",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "books", "3", "authors", "3"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "7. ビジネスルール違反 - 存在しない著者IDでの書籍作成（404）",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"title\": \"新作小説\",\n  \"price\": 1000,\n  \"publicationStatus\": \"PUBLISHED\",\n  \"authorIds\": [999]\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/books",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "books"]
 						}
 					},
 					"response": []
@@ -481,72 +589,177 @@
 			]
 		},
 		{
-			"name": "追加テストシナリオ",
+			"name": "06_エラーハンドリングテスト",
 			"item": [
 				{
-					"name": "1. 複数著者による書籍登録（夏目漱石＆村上春樹）",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
+					"name": "存在しない著者取得（404エラーテスト）",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('存在しない著者で404エラーが発生する', function () {",
+									"    pm.expect(pm.response.code).to.eql(404);",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.code).to.eql('RESOURCE_NOT_FOUND');",
+									"});"
+								],
+								"type": "text/javascript"
 							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"title\": \"時代を超えた対談集\",\n  \"price\": 2500.00,\n  \"publicationStatus\": \"PUBLISHED\",\n  \"authorIds\": [1, 2]\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/books",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "books"]
 						}
-					},
-					"response": []
-				},
-				{
-					"name": "2. 出版予定書籍の登録",
+					],
 					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"title\": \"新作短編集\",\n  \"price\": 1800.00,\n  \"publicationStatus\": \"UNPUBLISHED\",\n  \"authorIds\": [3]\n}"
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/books",
-							"host": ["{{baseUrl}}"],
-							"path": ["api", "books"]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "3. 出版予定→出版済みに状況更新",
-					"request": {
-						"method": "PATCH",
+						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/books/5/publication-status?status=PUBLISHED",
+							"raw": "{{baseUrl}}/api/authors/99999",
 							"host": ["{{baseUrl}}"],
-							"path": ["api", "books", "5", "publication-status"],
-							"query": [
-								{
-									"key": "status",
-									"value": "PUBLISHED"
-								}
-							]
+							"path": ["api", "authors", "99999"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "存在しない書籍取得（404エラーテスト）",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('存在しない書籍で404エラーが発生する', function () {",
+									"    pm.expect(pm.response.code).to.eql(404);",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.code).to.eql('RESOURCE_NOT_FOUND');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/books/99999",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books", "99999"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "バリデーションエラーテスト（著者）",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('バリデーションエラーが発生する', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 422]);",
+									"    const responseJson = pm.response.json();",
+									"    pm.expect(responseJson.code).to.eql('VALIDATION_ERROR');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"\",\n  \"birthDate\": \"2030-01-01\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/authors",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "authors"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "存在しない著者IDで書籍作成（エラーテスト）",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('存在しない著者IDでエラーが発生する', function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 404, 500]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"テスト書籍\",\n  \"price\": 1000,\n  \"authorIds\": [99999]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/books",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "books"]
 						}
 					},
 					"response": []
 				}
 			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// 環境変数の初期化",
+					"if (!pm.environment.get('baseUrl')) {",
+					"    pm.environment.set('baseUrl', 'http://localhost:8080');",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// 共通テスト",
+					"pm.test('レスポンス時間が2秒以内', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+					"});",
+					"",
+					"// 成功レスポンスの場合はContent-Typeをチェック",
+					"if (pm.response.code >= 200 && pm.response.code < 300) {",
+					"    pm.test('Content-TypeがJSON', function () {",
+					"        pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+					"    });",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
 		}
 	]
 }
