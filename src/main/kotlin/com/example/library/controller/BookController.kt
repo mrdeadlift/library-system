@@ -98,32 +98,6 @@ class BookController(
     }
 
     /**
-     * 書籍を削除
-     *
-     * @param id 書籍ID
-     */
-    @DeleteMapping("/{id}")
-    fun deleteBook(
-        @PathVariable id: Long,
-    ): ResponseEntity<Void> {
-        bookService.deleteById(id)
-        return ResponseEntity.noContent().build()
-    }
-
-    /**
-     * 書籍の存在チェック
-     *
-     * @param id 書籍ID
-     */
-    @GetMapping("/{id}/exists")
-    fun checkBookExists(
-        @PathVariable id: Long,
-    ): ResponseEntity<Map<String, Boolean>> {
-        val exists = bookService.existsById(id)
-        return ResponseEntity.ok(mapOf("exists" to exists))
-    }
-
-    /**
      * 書籍の出版状況を更新
      *
      * @param id 書籍ID
@@ -166,35 +140,5 @@ class BookController(
     ): ResponseEntity<BookResponse> {
         val updatedBook = bookService.removeAuthor(bookId, authorId)
         return ResponseEntity.ok(updatedBook)
-    }
-
-    /**
-     * 出版済み書籍一覧を取得
-     *
-     * @param page ページ番号 (0ベース、デフォルト: 0)
-     * @param size ページサイズ (デフォルト: 20)
-     */
-    @GetMapping("/published")
-    fun getPublishedBooks(
-        @RequestParam(defaultValue = "0") page: Int,
-        @RequestParam(defaultValue = "20") size: Int,
-    ): ResponseEntity<PagedResponse<BookResponse>> {
-        val result = bookService.findPublishedBooks(page, size)
-        return ResponseEntity.ok(result)
-    }
-
-    /**
-     * 未出版書籍一覧を取得
-     *
-     * @param page ページ番号 (0ベース、デフォルト: 0)
-     * @param size ページサイズ (デフォルト: 20)
-     */
-    @GetMapping("/unpublished")
-    fun getUnpublishedBooks(
-        @RequestParam(defaultValue = "0") page: Int,
-        @RequestParam(defaultValue = "20") size: Int,
-    ): ResponseEntity<PagedResponse<BookResponse>> {
-        val result = bookService.findUnpublishedBooks(page, size)
-        return ResponseEntity.ok(result)
     }
 }

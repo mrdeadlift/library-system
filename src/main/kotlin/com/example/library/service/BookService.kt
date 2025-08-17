@@ -268,41 +268,4 @@ class BookService(
         val savedBook = bookRepository.update(updatedBook)
         return BookResponse.from(savedBook)
     }
-
-    /**
-     * 書籍を削除
-     */
-    @Transactional
-    fun deleteById(id: Long) {
-        // 書籍の存在確認
-        if (!bookRepository.existsById(id)) {
-            throw ResourceNotFoundException("指定されたID=$id の書籍が見つかりません")
-        }
-
-        val deleted = bookRepository.deleteById(id)
-        if (!deleted) {
-            throw IllegalStateException("書籍の削除に失敗しました。ID=$id")
-        }
-    }
-
-    /**
-     * 書籍が存在するかチェック
-     */
-    fun existsById(id: Long): Boolean = bookRepository.existsById(id)
-
-    /**
-     * 出版済み書籍一覧を取得（ページネーション対応）
-     */
-    fun findPublishedBooks(
-        pageNumber: Int = 0,
-        pageSize: Int = 20,
-    ): PagedResponse<BookResponse> = findByPublicationStatus(PublicationStatus.PUBLISHED, pageNumber, pageSize)
-
-    /**
-     * 未出版書籍一覧を取得（ページネーション対応）
-     */
-    fun findUnpublishedBooks(
-        pageNumber: Int = 0,
-        pageSize: Int = 20,
-    ): PagedResponse<BookResponse> = findByPublicationStatus(PublicationStatus.UNPUBLISHED, pageNumber, pageSize)
 }
