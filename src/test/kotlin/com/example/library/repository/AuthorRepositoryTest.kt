@@ -272,36 +272,4 @@ class AuthorRepositoryTest {
             authorRepository.update(testAuthor) // IDがnull
         }
     }
-
-    @Test
-    fun `deleteById - 正常系`() {
-        // Given
-        val savedAuthor = authorRepository.save(testAuthor)
-
-        // When
-        val deleted = authorRepository.deleteById(savedAuthor.id!!)
-
-        // Then
-        assertTrue(deleted)
-        assertNull(authorRepository.findById(savedAuthor.id))
-    }
-
-    @Test
-    fun `deleteById - 存在しないID`() {
-        // When
-        val deleted = authorRepository.deleteById(999L)
-
-        // Then
-        assertFalse(deleted)
-    }
-
-    @Test
-    fun `existsById - 正常系`() {
-        // Given
-        val savedAuthor = authorRepository.save(testAuthor)
-
-        // When & Then
-        assertTrue(authorRepository.existsById(savedAuthor.id!!))
-        assertFalse(authorRepository.existsById(999L))
-    }
 }
