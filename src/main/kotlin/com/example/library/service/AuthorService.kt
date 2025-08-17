@@ -115,27 +115,4 @@ class AuthorService(
         val savedAuthor = authorRepository.update(updatedAuthor)
         return AuthorResponse.from(savedAuthor)
     }
-
-    /**
-     * 著者を削除
-     */
-    @Transactional
-    fun deleteById(id: Long) {
-        // 著者の存在確認
-        if (!authorRepository.existsById(id)) {
-            throw ResourceNotFoundException("指定されたID=$id の著者が見つかりません")
-        }
-
-        // 注意: 書籍との関連チェックは未実装（将来的に外部キー制約違反のハンドリング追加予定）
-
-        val deleted = authorRepository.deleteById(id)
-        if (!deleted) {
-            throw IllegalStateException("著者の削除に失敗しました。ID=$id")
-        }
-    }
-
-    /**
-     * 著者が存在するかチェック
-     */
-    fun existsById(id: Long): Boolean = authorRepository.existsById(id)
 }
