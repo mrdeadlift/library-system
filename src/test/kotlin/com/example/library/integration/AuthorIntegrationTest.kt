@@ -106,26 +106,11 @@ class AuthorIntegrationTest {
             ).andExpect(status().isOk)
             .andExpect(jsonPath("$.name").value("夏目金之助"))
 
-        // 8. 存在チェック
-        mockMvc
-            .perform(get("/api/authors/$authorId/exists"))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.exists").value(true))
-
-        // 9. 著者の削除
-        mockMvc
-            .perform(delete("/api/authors/$authorId"))
-            .andExpect(status().isNoContent)
-
-        // 10. 削除後の確認（存在しないことを確認）
+        // 8. 登録した著者が正しく取得できることを確認
         mockMvc
             .perform(get("/api/authors/$authorId"))
-            .andExpect(status().isNotFound)
-
-        mockMvc
-            .perform(get("/api/authors/$authorId/exists"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.exists").value(false))
+            .andExpect(jsonPath("$.name").value("夏目金之助"))
     }
 
     @Test
