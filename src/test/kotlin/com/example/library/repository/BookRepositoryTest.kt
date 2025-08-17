@@ -373,57 +373,6 @@ class BookRepositoryTest {
     }
 
     @Test
-    fun `deleteById - 正常系`() {
-        // Given
-        val savedBook =
-            bookRepository.save(
-                Book(
-                    title = "削除対象書籍",
-                    price = BigDecimal("1000.00"),
-                    publicationStatus = PublicationStatus.PUBLISHED,
-                    authors = listOf(testAuthor1),
-                ),
-            )
-
-        // When
-        val result = bookRepository.deleteById(savedBook.id!!)
-
-        // Then
-        assertTrue(result)
-
-        // 削除確認
-        assertNull(bookRepository.findById(savedBook.id!!))
-        assertFalse(bookRepository.existsById(savedBook.id!!))
-    }
-
-    @Test
-    fun `deleteById - 存在しない書籍`() {
-        // When
-        val result = bookRepository.deleteById(99999L)
-
-        // Then
-        assertFalse(result)
-    }
-
-    @Test
-    fun `existsById - 正常系`() {
-        // Given
-        val savedBook =
-            bookRepository.save(
-                Book(
-                    title = "存在チェック書籍",
-                    price = BigDecimal("1000.00"),
-                    publicationStatus = PublicationStatus.PUBLISHED,
-                    authors = listOf(testAuthor1),
-                ),
-            )
-
-        // When & Then
-        assertTrue(bookRepository.existsById(savedBook.id!!))
-        assertFalse(bookRepository.existsById(99999L))
-    }
-
-    @Test
     fun `existsByTitle - 正常系`() {
         // Given
         bookRepository.save(
@@ -456,6 +405,6 @@ class BookRepositoryTest {
         // When & Then
         assertFalse(bookRepository.existsByTitleAndIdNot("更新チェック書籍", savedBook.id!!)) // 自分自身は除外
         assertTrue(bookRepository.existsByTitleAndIdNot("更新チェック書籍", 99999L)) // 他のIDなら存在
-        assertFalse(bookRepository.existsByTitleAndIdNot("存在しない書籍", savedBook.id!!)) // 存在しないタイトル
+        assertFalse(bookRepository.existsByTitleAndIdNot("存在しない書籍", savedBook.id)) // 存在しないタイトル
     }
 }

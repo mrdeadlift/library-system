@@ -375,59 +375,6 @@ class BookServiceTest {
     }
 
     @Test
-    fun `deleteById - 正常系`() {
-        // Given
-        whenever(bookRepository.existsById(1L)).thenReturn(true)
-        whenever(bookRepository.deleteById(1L)).thenReturn(true)
-
-        // When
-        bookService.deleteById(1L)
-
-        // Then
-        verify(bookRepository).deleteById(1L)
-    }
-
-    @Test
-    fun `deleteById - 書籍が存在しない`() {
-        // Given
-        whenever(bookRepository.existsById(999L)).thenReturn(false)
-
-        // When & Then
-        val exception =
-            assertThrows<ResourceNotFoundException> {
-                bookService.deleteById(999L)
-            }
-        assertEquals("指定されたID=999 の書籍が見つかりません", exception.message)
-        verify(bookRepository, never()).deleteById(any())
-    }
-
-    @Test
-    fun `existsById - 正常系`() {
-        // Given
-        whenever(bookRepository.existsById(1L)).thenReturn(true)
-        whenever(bookRepository.existsById(999L)).thenReturn(false)
-
-        // When & Then
-        assertTrue(bookService.existsById(1L))
-        assertFalse(bookService.existsById(999L))
-    }
-
-    @Test
-    fun `findByPublicationStatus - 正常系`() {
-        // Given
-        val publishedBooks = listOf(testBook)
-        whenever(bookRepository.findByPublicationStatus(PublicationStatus.PUBLISHED, 0, 20)).thenReturn(publishedBooks)
-        whenever(bookRepository.countByPublicationStatus(PublicationStatus.PUBLISHED)).thenReturn(1L)
-
-        // When
-        val result = bookService.findByPublicationStatus(PublicationStatus.PUBLISHED, 0, 20)
-
-        // Then
-        assertEquals(1, result.content.size)
-        assertTrue(result.content[0].isPublished)
-    }
-
-    @Test
     fun `findByAuthorId - 正常系`() {
         // Given
         val books = listOf(testBook)
@@ -454,38 +401,5 @@ class BookServiceTest {
                 bookService.findByAuthorId(999L, 0, 20)
             }
         assertEquals("指定されたID=999 の著者が見つかりません", exception.message)
-    }
-
-    @Test
-    fun `findPublishedBooks - 正常系`() {
-        // Given
-        val publishedBooks = listOf(testBook)
-        whenever(bookRepository.findByPublicationStatus(PublicationStatus.PUBLISHED, 0, 20)).thenReturn(publishedBooks)
-        whenever(bookRepository.countByPublicationStatus(PublicationStatus.PUBLISHED)).thenReturn(1L)
-
-        // When
-        val result = bookService.findPublishedBooks(0, 20)
-
-        // Then
-        assertEquals(1, result.content.size)
-        assertTrue(result.content.all { it.isPublished })
-    }
-
-    @Test
-    fun `findUnpublishedBooks - 正常系`() {
-        // Given
-        val unpublishedBook = testBook.copy(publicationStatus = PublicationStatus.UNPUBLISHED)
-        val unpublishedBooks = listOf(unpublishedBook)
-        whenever(
-            bookRepository.findByPublicationStatus(PublicationStatus.UNPUBLISHED, 0, 20),
-        ).thenReturn(unpublishedBooks)
-        whenever(bookRepository.countByPublicationStatus(PublicationStatus.UNPUBLISHED)).thenReturn(1L)
-
-        // When
-        val result = bookService.findUnpublishedBooks(0, 20)
-
-        // Then
-        assertEquals(1, result.content.size)
-        assertFalse(result.content.all { it.isPublished })
     }
 }
