@@ -123,6 +123,37 @@ class BookRepository(
     }
 
     /**
+     * 出版状況で書籍を検索（ページネーション対応、著者情報含む）
+     */
+    fun findByPublicationStatus(status: PublicationStatus, offset: Int, limit: Int): List<Book> {
+        val bookRecords = dsl.select()
+            .from(BOOKS)
+            .where(BOOKS.PUBLICATION_STATUS.eq(status.toJooqEnum()))
+            .orderBy(BOOKS.TITLE)
+            .limit(limit)
+            .offset(offset)
+            .fetch()
+
+        // 各書籍の著者情報を取得してBookオブジェクトを作成
+        return bookRecords.map { record ->
+            val bookId = record[BOOKS.ID]!!
+            val authors = findAuthorsByBookId(bookId)
+
+            Book(
+                id = bookId,
+                title = record[BOOKS.TITLE] ?: throw IllegalStateException("書籍タイトルの取得に失敗しました"),
+                price = record[BOOKS.PRICE] ?: throw IllegalStateException("価格の取得に失敗しました"),
+                publicationStatus = record[BOOKS.PUBLICATION_STATUS]?.let {
+                    PublicationStatus.fromJooqEnum(it)
+                } ?: PublicationStatus.UNPUBLISHED,
+                authors = authors,
+                createdAt = record[BOOKS.CREATED_AT] ?: throw IllegalStateException("作成日時の取得に失敗しました"),
+                updatedAt = record[BOOKS.UPDATED_AT] ?: throw IllegalStateException("更新日時の取得に失敗しました")
+            )
+        }
+    }
+
+    /**
      * 出版状況での検索結果数を取得
      */
     fun countByPublicationStatus(status: PublicationStatus): Long {
