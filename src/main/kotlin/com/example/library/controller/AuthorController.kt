@@ -8,7 +8,6 @@ import com.example.library.service.AuthorService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -88,31 +87,5 @@ class AuthorController(
     ): ResponseEntity<AuthorResponse> {
         val updatedAuthor = authorService.update(id, request)
         return ResponseEntity.ok(updatedAuthor)
-    }
-
-    /**
-     * 著者を削除
-     *
-     * @param id 著者ID
-     */
-    @DeleteMapping("/{id}")
-    fun deleteAuthor(
-        @PathVariable id: Long,
-    ): ResponseEntity<Void> {
-        authorService.deleteById(id)
-        return ResponseEntity.noContent().build()
-    }
-
-    /**
-     * 著者の存在チェック
-     *
-     * @param id 著者ID
-     */
-    @GetMapping("/{id}/exists")
-    fun checkAuthorExists(
-        @PathVariable id: Long,
-    ): ResponseEntity<Map<String, Boolean>> {
-        val exists = authorService.existsById(id)
-        return ResponseEntity.ok(mapOf("exists" to exists))
     }
 }
