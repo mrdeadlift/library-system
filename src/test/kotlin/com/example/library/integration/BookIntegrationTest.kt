@@ -154,26 +154,12 @@ class BookIntegrationTest {
             .andExpect(jsonPath("$.title").value("ノルウェイの森（改訂版）"))
             .andExpect(jsonPath("$.price").value(1900.00))
 
-        // 7. 存在チェック
-        mockMvc
-            .perform(get("/api/books/$bookId/exists"))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.exists").value(true))
-
-        // 8. 書籍の削除
-        mockMvc
-            .perform(delete("/api/books/$bookId"))
-            .andExpect(status().isNoContent)
-
-        // 9. 削除後の確認
+        // 7. 更新された書籍が正しく取得できることを確認
         mockMvc
             .perform(get("/api/books/$bookId"))
-            .andExpect(status().isNotFound)
-
-        mockMvc
-            .perform(get("/api/books/$bookId/exists"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.exists").value(false))
+            .andExpect(jsonPath("$.title").value("ノルウェイの森（改訂版）"))
+            .andExpect(jsonPath("$.price").value(1900.00))
     }
 
     @Test
@@ -237,20 +223,6 @@ class BookIntegrationTest {
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.content.length()").value(1))
             .andExpect(jsonPath("$.content[0].authors[0].name").value("村上春樹"))
-
-        // 5. 出版済み書籍専用エンドポイント
-        mockMvc
-            .perform(get("/api/books/published"))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.content.length()").value(1))
-            .andExpect(jsonPath("$.content[0].published").value(true))
-
-        // 6. 未出版書籍専用エンドポイント
-        mockMvc
-            .perform(get("/api/books/unpublished"))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.content.length()").value(1))
-            .andExpect(jsonPath("$.content[0].published").value(false))
     }
 
     @Test

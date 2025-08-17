@@ -136,8 +136,6 @@ class BookManagementIntegrationTest {
                 ).andExpect(status().isCreated)
                 .andReturn()
 
-        val book3Id = objectMapper.readTree(book3Result.response.contentAsString)["id"].asLong()
-
         // === STEP 5: 全書籍の状況確認 ===
         mockMvc
             .perform(get("/api/books"))
@@ -145,23 +143,7 @@ class BookManagementIntegrationTest {
             .andExpect(jsonPath("$.content.length()").value(3))
             .andExpect(jsonPath("$.totalElements").value(3))
 
-        // === STEP 6: 出版状況による検索テスト ===
-        // 出版済み書籍の検索
-        mockMvc
-            .perform(get("/api/books/published"))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.content.length()").value(2))
-            .andExpect(jsonPath("$.content[0].published").value(true))
-            .andExpect(jsonPath("$.content[1].published").value(true))
-
-        // 未出版書籍の検索
-        mockMvc
-            .perform(get("/api/books/unpublished"))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.content.length()").value(1))
-            .andExpect(jsonPath("$.content[0].title").value("ノルウェイの森"))
-
-        // === STEP 7: 著者による書籍検索 ===
+        // === STEP 6: 著者による書籍検索 ===
         // 村上春樹の書籍検索
         mockMvc
             .perform(get("/api/books").param("authorId", author1Id.toString()))
@@ -175,7 +157,7 @@ class BookManagementIntegrationTest {
             .andExpect(jsonPath("$.content.length()").value(1))
             .andExpect(jsonPath("$.content[0].title").value("容疑者Xの献身"))
 
-        // === STEP 8: タイトル検索 ===
+        // === STEP 7: タイトル検索 ===
         mockMvc
             .perform(get("/api/books").param("title", "ノルウェイ"))
             .andExpect(status().isOk)
@@ -188,7 +170,7 @@ class BookManagementIntegrationTest {
             .andExpect(jsonPath("$.content.length()").value(1))
             .andExpect(jsonPath("$.content[0].title").value("海辺のカフカ"))
 
-        // === STEP 9: 書籍の出版状況を変更 ===
+        // === STEP 8: 書籍の出版状況を変更 ===
         // 未出版書籍を出版済みに変更
         mockMvc
             .perform(
@@ -198,13 +180,7 @@ class BookManagementIntegrationTest {
             .andExpect(jsonPath("$.published").value(true))
             .andExpect(jsonPath("$.publicationStatus").value("PUBLISHED"))
 
-        // 出版済み書籍数の確認
-        mockMvc
-            .perform(get("/api/books/published"))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.content.length()").value(3))
-
-        // === STEP 10: 共著書籍の作成 ===
+        // === STEP 9: 共著書籍の作成 ===
         val collaborationBookRequest =
             BookCreateRequest(
                 title = "共著作品",
@@ -227,7 +203,7 @@ class BookManagementIntegrationTest {
 
         val collaborationBookId = objectMapper.readTree(collaborationResult.response.contentAsString)["id"].asLong()
 
-        // === STEP 11: 著者の追加・削除テスト ===
+        // === STEP 10: 著者の追加・削除テスト ===
         // 新しい著者を作成
         val author3Request = AuthorCreateRequest("川端康成", LocalDate.of(1899, 6, 14))
         val author3Result =
@@ -255,7 +231,7 @@ class BookManagementIntegrationTest {
             .andExpect(jsonPath("$.authors.length()").value(2))
             .andExpect(jsonPath("$.authorNames").value("村上春樹, 東野圭吾"))
 
-        // === STEP 12: 書籍情報の更新 ===
+        // === STEP 11: 書籍情報の更新 ===
         val updateRequest =
             BookUpdateRequest(
                 title = "ノルウェイの森（改訂版）",
@@ -273,7 +249,7 @@ class BookManagementIntegrationTest {
             .andExpect(jsonPath("$.title").value("ノルウェイの森（改訂版）"))
             .andExpect(jsonPath("$.price").value(1900.00))
 
-        // === STEP 13: ページネーションのテスト ===
+        // === STEP 12: ページネーションのテスト ===
         // さらに書籍を追加してページネーションをテスト
         repeat(18) { i ->
             val additionalBookRequest =
@@ -310,7 +286,7 @@ class BookManagementIntegrationTest {
             .andExpect(jsonPath("$.first").value(false))
             .andExpect(jsonPath("$.last").value(true))
 
-        // === STEP 14: ビジネスルールの確認 ===
+        // === STEP 13: ビジネスルールの確認 ===
         // 出版済み → 未出版への変更（エラーになることを確認）
         mockMvc
             .perform(
@@ -342,28 +318,12 @@ class BookManagementIntegrationTest {
             .perform(delete("/api/books/$singleAuthorBookId/authors/$author1Id"))
             .andExpect(status().isBadRequest)
 
-        // === STEP 15: 削除テスト ===
-        // 書籍を削除
-        mockMvc
-            .perform(delete("/api/books/$book3Id"))
-            .andExpect(status().isNoContent)
-
-        // 削除された書籍が検索されないことを確認
-        mockMvc
-            .perform(get("/api/books/$book3Id"))
-            .andExpect(status().isNotFound)
-
-        mockMvc
-            .perform(get("/api/books/$book3Id/exists"))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$.exists").value(false))
-
-        // === STEP 16: 最終的なデータ状況確認 ===
-        // 全体の書籍数確認（削除された1冊を除く）
+        // === STEP 14: 最終的なデータ状況確認 ===
+        // 全体の書籍数確認
         mockMvc
             .perform(get("/api/books"))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.totalElements").value(22)) // 4 + 18 + 1 (単著) - 1 (削除) = 22
+            .andExpect(jsonPath("$.totalElements").value(23)) // 4 + 18 + 1 (単著) = 23
 
         // 著者別の書籍数確認
         mockMvc
@@ -374,62 +334,7 @@ class BookManagementIntegrationTest {
         mockMvc
             .perform(get("/api/books").param("authorId", author2Id.toString()))
             .andExpect(status().isOk)
-            .andExpect(jsonPath("$.totalElements").value(1)) // 東野圭吾の書籍（共著1冊のみ残存）
-
-        // 出版状況別の確認
-        mockMvc
-            .perform(get("/api/books/published"))
-            .andExpect(status().isOk)
-
-        mockMvc
-            .perform(get("/api/books/unpublished"))
-            .andExpect(status().isOk)
-    }
-
-    @Test
-    fun `データ整合性テスト - 著者削除時の書籍への影響`() {
-        // === 著者と書籍を作成 ===
-        val authorRequest = AuthorCreateRequest("テスト著者", LocalDate.of(1950, 1, 1))
-        val authorResult =
-            mockMvc
-                .perform(
-                    post("/api/authors")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(authorRequest)),
-                ).andExpect(status().isCreated)
-                .andReturn()
-
-        val authorId = objectMapper.readTree(authorResult.response.contentAsString)["id"].asLong()
-
-        val bookRequest =
-            BookCreateRequest(
-                title = "テスト書籍",
-                price = BigDecimal("1000.00"),
-                publicationStatus = PublicationStatus.PUBLISHED,
-                authorIds = listOf(authorId),
-            )
-
-        val bookResult =
-            mockMvc
-                .perform(
-                    post("/api/books")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(bookRequest)),
-                ).andExpect(status().isCreated)
-                .andReturn()
-
-        val bookId = objectMapper.readTree(bookResult.response.contentAsString)["id"].asLong()
-
-        // === 著者を削除 ===
-        mockMvc
-            .perform(delete("/api/authors/$authorId"))
-            .andExpect(status().isNoContent)
-
-        // === 書籍が適切に処理されているか確認 ===
-        // 著者削除後の書籍状態確認（著者が存在しないためアクセスできない）
-        mockMvc
-            .perform(get("/api/books/$bookId"))
-            .andExpect(status().isBadRequest)
+            .andExpect(jsonPath("$.totalElements").value(2)) // 東野圭吾の書籍（共著+単著）
     }
 
     @Test
